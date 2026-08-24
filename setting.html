@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The World — VARETH</title>
+<style>
+/* ══════════════════════════════════════════════════════════
+   ATLAS CORPORATION — CONTRACT SECURITY DIVISION
+   MISSION BRIEFING INTERFACE  ::  SITE KX-19
+   ══════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+:root{
+  --bg:        #05080a;
+  --bg-2:      #080d10;
+  --panel:     #0b1216;
+  --panel-2:   #0f171c;
+  --line:      #1b2c33;
+  --line-hot:  #2b4a54;
+
+  --hud:       #5ef3e0;
+  --hud-dim:   #2e8f86;
+  --hud-ghost: rgba(94,243,224,.08);
+  --warn:      #ff9d2e;
+  --alert:     #ff4d4d;
+  --ok:        #7ee787;
+
+  --txt:       #b9ccd2;
+  --txt-dim:   #5f7982;
+  --txt-hi:    #e6f6f8;
+
+  --disp: 'Chakra Petch', sans-serif;
+  --data: 'Share Tech Mono', monospace;
+
+  --notch: 14px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+body{
+  background:var(--bg);
+  color:var(--txt);
+  font-family:var(--disp);
+  font-weight:300;
+  font-size:16.5px;
+  line-height:1.75;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* ── ambient grid + scanlines + vignette ───────────────── */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:900;
+  background-image:
+    linear-gradient(rgba(94,243,224,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(94,243,224,.028) 1px,transparent 1px);
+  background-size:52px 52px;
+}
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:901;
+  background:
+    repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px),
+    radial-gradient(ellipse at 50% 42%,transparent 45%,rgba(0,0,0,.82) 100%);
+}
+
+/* scanning sweep */
+@keyframes sweep{0%{top:-15%}100%{top:115%}}
+.sweep{
+  position:fixed;left:0;right:0;height:130px;z-index:902;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(94,243,224,.035),transparent);
+  animation:sweep 8.5s linear infinite;
+}
+
+/* ── TOP STATUS RAIL ───────────────────────────────────── */
+.statusbar{
+  background:var(--bg-2);border-bottom:1px solid var(--line);
+  font-family:var(--data);font-size:.66rem;letter-spacing:.18em;
+  color:var(--txt-dim);text-transform:uppercase;
+}
+.statusbar .wrap{display:flex;gap:2rem;flex-wrap:wrap;padding:.42rem 2rem}
+.statusbar b{color:var(--hud);font-weight:400}
+.blip{
+  display:inline-block;width:6px;height:6px;background:var(--ok);
+  border-radius:50%;margin-right:.45rem;vertical-align:middle;
+  animation:pulse 1.9s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 6px var(--ok)}50%{opacity:.35;box-shadow:none}}
+
+/* ── NAV ───────────────────────────────────────────────── */
+nav{
+  position:sticky;top:0;z-index:500;
+  background:rgba(8,13,16,.95);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line-hot);
+}
+.nav-inner{max-width:1240px;margin:0 auto;padding:0 2rem;display:flex;align-items:stretch;gap:1.5rem;flex-wrap:wrap}
+.brand{
+  font-family:var(--disp);font-weight:700;font-size:1rem;letter-spacing:.24em;
+  color:var(--hud);text-decoration:none;text-transform:uppercase;
+  display:flex;align-items:center;gap:.6rem;padding:.9rem 0;white-space:nowrap;
+}
+.brand::before{content:'\25C6';font-size:.7rem;color:var(--warn)}
+.brand span{color:var(--txt-dim);font-weight:300}
+nav ul{list-style:none;display:flex;margin-left:auto;flex-wrap:wrap}
+nav a{
+  display:block;padding:.95rem 1.15rem;
+  font-family:var(--data);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--txt-dim);text-decoration:none;position:relative;transition:.18s;
+}
+nav a::before{
+  content:'';position:absolute;left:0;right:0;bottom:0;height:2px;
+  background:var(--hud);transform:scaleX(0);transition:transform .2s;
+}
+nav a:hover{color:var(--hud);background:var(--hud-ghost)}
+nav a:hover::before{transform:scaleX(1)}
+nav a.active{color:var(--hud);background:var(--hud-ghost)}
+nav a.active::before{transform:scaleX(1)}
+
+/* ── LAYOUT ────────────────────────────────────────────── */
+.wrap{max-width:1240px;margin:0 auto;padding:0 2rem}
+main{padding-bottom:5rem}
+section{padding:3.6rem 0}
+
+/* ── HERO / BRIEFING HEADER ────────────────────────────── */
+.hero{position:relative;padding:3.5rem 0 3rem;border-bottom:1px solid var(--line)}
+.hero-frame{
+  position:relative;background:var(--panel);
+  border:1px solid var(--line-hot);padding:2.6rem 2.4rem;
+}
+.hero-frame::before,.hero-frame::after{
+  content:'';position:absolute;width:26px;height:26px;border:2px solid var(--hud);
+}
+.hero-frame::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.hero-frame::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+
+.tagline{
+  font-family:var(--data);font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--warn);display:flex;align-items:center;gap:.9rem;margin-bottom:1.1rem;
+}
+.tagline::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--line-hot),transparent)}
+
+h1{
+  font-family:var(--disp);font-weight:700;
+  font-size:clamp(2.4rem,6.5vw,5rem);line-height:1;letter-spacing:.02em;
+  text-transform:uppercase;color:var(--txt-hi);margin-bottom:1.1rem;
+}
+h1 em{font-style:normal;color:var(--hud);text-shadow:0 0 26px rgba(94,243,224,.35)}
+
+.lede{font-size:clamp(1rem,1.5vw,1.18rem);max-width:62ch;color:var(--txt);font-weight:300}
+.lede strong{color:var(--txt-hi);font-weight:500}
+
+/* ── SECTION HEADERS ───────────────────────────────────── */
+h2{
+  font-family:var(--disp);font-weight:600;
+  font-size:clamp(1.5rem,3vw,2.2rem);letter-spacing:.05em;text-transform:uppercase;
+  color:var(--txt-hi);margin-bottom:1.5rem;
+  display:flex;align-items:center;gap:1rem;
+}
+h2::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--line-hot),transparent)}
+h2 .num{
+  font-family:var(--data);font-size:.72rem;letter-spacing:.2em;
+  color:var(--hud);background:var(--hud-ghost);
+  border:1px solid var(--line-hot);padding:.32rem .7rem;
+  white-space:nowrap;flex-shrink:0;
+}
+h3{
+  font-family:var(--disp);font-weight:600;font-size:1.15rem;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--txt-hi);margin:1.9rem 0 .7rem;
+}
+h4{
+  font-family:var(--data);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--hud);margin:1.6rem 0 .7rem;
+  padding-left:.7rem;border-left:2px solid var(--hud);
+}
+p{margin-bottom:1rem;max-width:74ch}
+p:last-child{margin-bottom:0}
+a{color:var(--hud)}
+strong{color:var(--txt-hi);font-weight:500}
+
+/* ── GRID ──────────────────────────────────────────────── */
+.grid{display:grid;gap:1.2rem}
+.g2{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(262px,1fr))}
+
+/* ── CARD (notched HUD panel) ──────────────────────────── */
+.card{
+  background:var(--panel);border:1px solid var(--line);
+  padding:1.5rem 1.5rem 1.6rem;position:relative;
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));
+  transition:.2s;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;width:3px;height:38px;background:var(--hud);
+}
+.card:hover{background:var(--panel-2);border-color:var(--line-hot);transform:translateY(-2px)}
+.card h3{margin-top:0;font-size:1.06rem}
+.card p{font-size:.92rem}
+.card .tag{
+  font-family:var(--data);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--txt-dim);display:block;margin-bottom:.55rem;
+}
+.card.warn::before{background:var(--warn)}
+.card.alert::before{background:var(--alert)}
+.card.ok::before{background:var(--ok)}
+.card.dim::before{background:var(--txt-dim)}
+
+/* ── DATA PANEL (mission parameters) ───────────────────── */
+.dossier{
+  background:var(--panel);border:1px solid var(--line-hot);
+  margin:1.8rem 0;position:relative;
+  clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));
+}
+.dossier::before{
+  content:attr(data-label);display:block;
+  font-family:var(--data);font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--bg);background:var(--hud);padding:.42rem 1.2rem;
+}
+.field{
+  display:flex;gap:1.2rem;align-items:baseline;
+  padding:.62rem 1.4rem;border-bottom:1px solid rgba(27,44,51,.6);
+}
+.field:last-child{border-bottom:none;padding-bottom:1.1rem}
+.field .k{
+  font-family:var(--data);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--hud-dim);min-width:200px;flex-shrink:0;
+}
+.field .k::before{content:'\25B8 ';color:var(--line-hot)}
+.field .v{color:var(--txt);font-size:.93rem}
+
+/* ── REDACTED ──────────────────────────────────────────── */
+.redacted{
+  background:#000;color:transparent;padding:0 .4em;
+  border:1px solid var(--line);user-select:none;transition:color .35s;
+}
+.redacted:hover{color:#1e2c31}
+
+/* ── NOTE / ADVISORY BLOCK ─────────────────────────────── */
+.note{
+  background:var(--bg-2);border:1px solid var(--line);border-left:3px solid var(--hud);
+  padding:1.1rem 1.4rem;margin:1.7rem 0;font-size:.93rem;
+}
+.note .lbl{
+  font-family:var(--data);font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--hud);display:block;margin-bottom:.45rem;
+}
+.note.warn{border-left-color:var(--warn)}
+.note.warn .lbl{color:var(--warn)}
+.note.corp{border-left-color:var(--alert)}
+.note.corp .lbl{color:var(--alert)}
+
+/* ── LISTS ─────────────────────────────────────────────── */
+ul.clean,ol.clean{list-style:none;margin:1rem 0}
+ul.clean li,ol.clean li{
+  padding:.5rem 0 .5rem 1.7rem;position:relative;
+  border-bottom:1px solid rgba(27,44,51,.5);font-size:.93rem;
+}
+ul.clean li::before{content:'\25B8';position:absolute;left:.2rem;color:var(--hud);font-size:.82rem}
+ol.clean{counter-reset:c}
+ol.clean li{padding-left:2.4rem}
+ol.clean li::before{
+  counter-increment:c;content:counter(c,decimal-leading-zero);
+  position:absolute;left:0;top:.55rem;
+  font-family:var(--data);font-size:.68rem;color:var(--hud);
+  border:1px solid var(--line-hot);padding:.05rem .32rem;
+}
+
+/* ── TABLE ─────────────────────────────────────────────── */
+table{width:100%;border-collapse:collapse;margin:1.4rem 0;font-size:.9rem}
+th{
+  font-family:var(--data);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;
+  text-align:left;padding:.7rem .9rem;color:var(--hud);
+  background:var(--hud-ghost);border-bottom:1px solid var(--hud-dim);
+}
+td{padding:.7rem .9rem;border-bottom:1px solid var(--line);vertical-align:top}
+tr:hover td{background:rgba(94,243,224,.03)}
+
+/* ── BUTTONS ───────────────────────────────────────────── */
+.btn{
+  display:inline-block;font-family:var(--data);font-size:.72rem;
+  letter-spacing:.18em;text-transform:uppercase;
+  padding:.8rem 1.6rem;margin:.35rem .45rem .35rem 0;
+  border:1px solid var(--hud);color:var(--hud);text-decoration:none;
+  background:transparent;transition:.18s;position:relative;
+  clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,9px 100%,0 calc(100% - 9px));
+}
+.btn:hover{background:var(--hud);color:var(--bg);box-shadow:0 0 22px rgba(94,243,224,.3)}
+.btn.solid{background:var(--hud);color:var(--bg)}
+.btn.solid:hover{background:#8ef8e9;box-shadow:0 0 28px rgba(94,243,224,.45)}
+.btn.ghost{border-color:var(--line-hot);color:var(--txt-dim)}
+.btn.ghost:hover{border-color:var(--hud);color:var(--hud);background:var(--hud-ghost);box-shadow:none}
+
+/* ── FOOTER ────────────────────────────────────────────── */
+footer{
+  border-top:1px solid var(--line-hot);background:var(--bg-2);
+  padding:2.2rem 0;font-family:var(--data);font-size:.68rem;
+  color:var(--txt-dim);letter-spacing:.14em;text-transform:uppercase;
+}
+footer .wrap{display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+footer a{color:var(--hud);text-decoration:none}
+
+/* ── ANIMATION ─────────────────────────────────────────── */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.rise{animation:rise .55s cubic-bezier(.2,.7,.3,1) both}
+.d1{animation-delay:.07s}.d2{animation-delay:.14s}
+.d3{animation-delay:.21s}.d4{animation-delay:.28s}
+
+@media (prefers-reduced-motion:reduce){
+  .rise{animation:none}.sweep{display:none}.blip{animation:none}
+  html{scroll-behavior:auto}
+}
+
+@media (max-width:680px){
+  .wrap{padding:0 1.1rem}
+  .statusbar .wrap{gap:1rem;padding:.4rem 1.1rem}
+  .nav-inner{padding:0 1.1rem}
+  nav ul{margin-left:0;width:100%;border-top:1px solid var(--line)}
+  nav a{padding:.7rem .8rem}
+  .hero-frame{padding:1.8rem 1.4rem}
+  .field{flex-direction:column;gap:.15rem}
+  .field .k{min-width:0}
+  h2{flex-wrap:wrap}
+}
+
+/* ── MISSION PARAMETER READOUT (AC6 briefing grid) ─────── */
+.paramgrid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:1px;margin-top:2.2rem;background:var(--line);
+  border:1px solid var(--line);
+}
+.param{
+  background:var(--bg-2);padding:.75rem .95rem;
+  display:flex;flex-direction:column;gap:.15rem;
+}
+.param .pk{
+  font-family:var(--data);font-size:.6rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--txt-dim);
+}
+.param .pv{
+  font-family:var(--disp);font-weight:500;font-size:.92rem;
+  letter-spacing:.05em;text-transform:uppercase;color:var(--hud);
+}
+.param .pv.warn{color:var(--warn)}
+.param .pv.alert{color:var(--alert)}
+
+</style>
+</head>
+<body>
+<div class="sweep"></div>
+<div class="statusbar"><div class="wrap">
+  <span><span class="blip"></span>LINK <b>ACTIVE</b></span>
+  <span>MODE <b>AREA DATA</b></span>
+  <span>AREA <b>SITE KX-19 / FULL SURVEY</b></span>
+  <span>DOC <b>GEN. DISTRIBUTION</b></span>
+  <span style="margin-left:auto">CLR <b>CON-3</b></span>
+</div></div>
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="brand">ATLAS <span>/ KX-19</span></a>
+    <ul>
+      <li><a href="index.html">Briefing</a></li>
+      <li><a href="setting.html" class="active">The World</a></li>
+      <li><a href="factions.html">Employers</a></li>
+      <li><a href="pilot-creation.html">Build a Pilot</a></li>
+      <li><a href="rules.html">Rules</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap"><div class="hero-frame">
+    <div class="tagline rise">Site Survey · General Distribution</div>
+    <h1 class="rise d1">The <em>World</em></h1>
+    <p class="lede rise d2">
+      Vareth is a marginal world at the edge of charted space. Atlas is here to make it
+      liveable. Something on the ground disagrees.
+    </p>
+  </div></div>
+</header>
+
+<main>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">OP.01 // SITE DATA</span>Vareth at a Glance</h2>
+    <div class="dossier" data-label="Survey Site KX-19">
+      <div class="field"><span class="k">Designation</span><span class="v">ATLAS Survey Site KX-19 — informally "Vareth"</span></div>
+      <div class="field"><span class="k">System</span><span class="v">The Ashkar Reach · ~340 light-years from Cradle</span></div>
+      <div class="field"><span class="k">Gravity</span><span class="v">0.91 G</span></div>
+      <div class="field"><span class="k">Atmosphere</span><span class="v">Sub-standard — breather-assist required outside domes</span></div>
+      <div class="field"><span class="k">Day / Year</span><span class="v">29.4 hours · 412 local days</span></div>
+      <div class="field"><span class="k">Moon</span><span class="v">Tessera — small, airless, unremarkable</span></div>
+      <div class="field"><span class="k">Population</span><span class="v">~4,200 contractors. No permanent civilians.</span></div>
+      <div class="field"><span class="k">Previous Status</span><span class="v">Exclusion zone, 2158–2549. Charter lapsed; claim filed 2550.</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">OP.02 // HISTORY</span>The Official Version</h2>
+    <p>
+      Vareth was used during the <strong>First Corporate-Government Expansion Wars</strong> (2140–2158),
+      a conflict most people remember as a footnote and nobody remembers fondly. Something was built
+      here. It was abandoned when the war ended.
+    </p>
+    <p>
+      Under the peace settlement, Vareth was declared an exclusion site — closed to settlement,
+      salvage, and survey. It stayed closed for nearly four hundred years. In 2549 the charter
+      governing that exclusion lapsed during a routine legislative consolidation. Atlas filed
+      first and won the claim in 2550.
+    </p>
+    <div class="note">
+      <span class="lbl">What Your Pilot Would Know</span>
+      Common knowledge: Vareth was a war site, it's been sealed a long time, and Atlas got the
+      rights through what everyone assumes was either luck or lobbying. The details of
+      <em>what</em> was built here aren't in any briefing packet you've been given.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">OP.03 // TERRAIN</span>Operational Regions</h2>
+    <div class="grid g2">
+      <div class="card sage rise">
+        <span class="tag">Zone — Frontier · Active Operations</span>
+        <h3>Ashfall Delta</h3>
+        <p>Grey volcanic silt at a river mouth on the coast. The safest, lowest, most workable ground on the planet — which is why Site Zero is here. Fast-breeding scavenger fauna, mineral-heavy soil, and weather that turns without much warning.</p>
+      </div>
+      <div class="card oxblood rise d1">
+        <span class="tag">Zone — Red · Restricted</span>
+        <h3>The Glass Wastes</h3>
+        <p>Kilometres of black-green glass, fused by something that happened here during the war. Unexploded ordnance, live minefields, and geothermal vents. Atlas surveys it from a distance. Contract Security occasionally doesn't get that luxury.</p>
+      </div>
+      <div class="card amber rise d2">
+        <span class="tag">Zone — Wild · Largely Unsurveyed</span>
+        <h3>The Bloomlands</h3>
+        <p>A dense forest belt growing faster and more aggressively than it has any right to. The flora here has developed defences that interfere with sensors and targeting systems. Nobody has satisfactorily explained why.</p>
+      </div>
+      <div class="card slate rise d3">
+        <span class="tag">Zone — Wild · Barely Charted</span>
+        <h3>The Choral Deep</h3>
+        <p>A subterranean cave-and-fungal network beneath the Wastes. Named for the low resonant sound it makes when disturbed. Genuinely beautiful. Genuinely unnerving. Atlas has surveyed perhaps four percent of it.</p>
+      </div>
+    </div>
+    <div class="note warn" style="margin-top:2rem">
+      <span class="lbl">Access Advisory</span>
+      A fifth region exists at the planet's mountainous headwaters. It does not appear on
+      contractor-issue maps. Atlas describes it as <span class="redacted">████████████████</span>
+      and lists it as <strong>closed to all personnel</strong>.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">OP.04 // HOME</span>Site Zero</h2>
+    <p>Your base. Roughly 2,500 people, most of whom are tired. You'll come to know it well.</p>
+    <table>
+      <tr><th style="width:34%">Location</th><th>What It Is</th></tr>
+      <tr><td><strong>The Hangar</strong></td><td>Contract Security's frame bay. Halda Vries runs it and knows more about your mech than you do.</td></tr>
+      <tr><td><strong>The Undertow</strong></td><td>The unofficial bar. Maria pours. Everything anyone knows gets said here eventually.</td></tr>
+      <tr><td><strong>Housing Blocks</strong></td><td>Modular, functional, not built for comfort. Yours is small.</td></tr>
+      <tr><td><strong>Medical Bay</strong></td><td>Competent staff. Chronically undersized for the actual casualty rate.</td></tr>
+      <tr><td><strong>Site Command</strong></td><td>TerraOps administration. Where your schedules come from.</td></tr>
+      <tr><td><strong>The Perimeter</strong></td><td>The edge of secure ground. People go quiet when they walk it at night.</td></tr>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">OP.05 // RUMOURS</span>What They Say at the Undertow</h2>
+    <p>None of this is official. Some of it is nonsense. Your pilot has heard most of it.</p>
+    <ul class="clean">
+      <li>The crew that worked this contract before you didn't all rotate home, and the paperwork says they did.</li>
+      <li>There's an office in the east annex with no name on the door and no listing in the directory.</li>
+      <li>Somebody's buying salvage that nobody is officially selling.</li>
+      <li>Equipment failures on Contract Security frames are running higher than TerraOps kit. Nobody will log it.</li>
+      <li>A transport driver filed a sighting report last quarter. It came back reclassified as "wildlife" with her name still on it.</li>
+      <li>Atlas isn't the only company on this rock. Nobody in Contract Security has been told who else is.</li>
+      <li>The wildlife out there doesn't behave like wildlife.</li>
+    </ul>
+    <div class="note corp">
+      <span class="lbl">Advisory — TerraOps</span>
+      Contractors are reminded that morale-negative speculation is not covered under
+      hazard-pay provisions.
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>ATLAS CORPORATION · GROUND WORTH STANDING ON</div>
+    <div><a href="pilot-creation.html">Next: Build a Pilot →</a></div>
+  </div>
+</footer>
+</body>
+</html>

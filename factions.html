@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employers — VARETH</title>
+<style>
+/* ══════════════════════════════════════════════════════════
+   ATLAS CORPORATION — CONTRACT SECURITY DIVISION
+   MISSION BRIEFING INTERFACE  ::  SITE KX-19
+   ══════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+:root{
+  --bg:        #05080a;
+  --bg-2:      #080d10;
+  --panel:     #0b1216;
+  --panel-2:   #0f171c;
+  --line:      #1b2c33;
+  --line-hot:  #2b4a54;
+
+  --hud:       #5ef3e0;
+  --hud-dim:   #2e8f86;
+  --hud-ghost: rgba(94,243,224,.08);
+  --warn:      #ff9d2e;
+  --alert:     #ff4d4d;
+  --ok:        #7ee787;
+
+  --txt:       #b9ccd2;
+  --txt-dim:   #5f7982;
+  --txt-hi:    #e6f6f8;
+
+  --disp: 'Chakra Petch', sans-serif;
+  --data: 'Share Tech Mono', monospace;
+
+  --notch: 14px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+body{
+  background:var(--bg);
+  color:var(--txt);
+  font-family:var(--disp);
+  font-weight:300;
+  font-size:16.5px;
+  line-height:1.75;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* ── ambient grid + scanlines + vignette ───────────────── */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:900;
+  background-image:
+    linear-gradient(rgba(94,243,224,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(94,243,224,.028) 1px,transparent 1px);
+  background-size:52px 52px;
+}
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:901;
+  background:
+    repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px),
+    radial-gradient(ellipse at 50% 42%,transparent 45%,rgba(0,0,0,.82) 100%);
+}
+
+/* scanning sweep */
+@keyframes sweep{0%{top:-15%}100%{top:115%}}
+.sweep{
+  position:fixed;left:0;right:0;height:130px;z-index:902;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(94,243,224,.035),transparent);
+  animation:sweep 8.5s linear infinite;
+}
+
+/* ── TOP STATUS RAIL ───────────────────────────────────── */
+.statusbar{
+  background:var(--bg-2);border-bottom:1px solid var(--line);
+  font-family:var(--data);font-size:.66rem;letter-spacing:.18em;
+  color:var(--txt-dim);text-transform:uppercase;
+}
+.statusbar .wrap{display:flex;gap:2rem;flex-wrap:wrap;padding:.42rem 2rem}
+.statusbar b{color:var(--hud);font-weight:400}
+.blip{
+  display:inline-block;width:6px;height:6px;background:var(--ok);
+  border-radius:50%;margin-right:.45rem;vertical-align:middle;
+  animation:pulse 1.9s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 6px var(--ok)}50%{opacity:.35;box-shadow:none}}
+
+/* ── NAV ───────────────────────────────────────────────── */
+nav{
+  position:sticky;top:0;z-index:500;
+  background:rgba(8,13,16,.95);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line-hot);
+}
+.nav-inner{max-width:1240px;margin:0 auto;padding:0 2rem;display:flex;align-items:stretch;gap:1.5rem;flex-wrap:wrap}
+.brand{
+  font-family:var(--disp);font-weight:700;font-size:1rem;letter-spacing:.24em;
+  color:var(--hud);text-decoration:none;text-transform:uppercase;
+  display:flex;align-items:center;gap:.6rem;padding:.9rem 0;white-space:nowrap;
+}
+.brand::before{content:'\25C6';font-size:.7rem;color:var(--warn)}
+.brand span{color:var(--txt-dim);font-weight:300}
+nav ul{list-style:none;display:flex;margin-left:auto;flex-wrap:wrap}
+nav a{
+  display:block;padding:.95rem 1.15rem;
+  font-family:var(--data);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--txt-dim);text-decoration:none;position:relative;transition:.18s;
+}
+nav a::before{
+  content:'';position:absolute;left:0;right:0;bottom:0;height:2px;
+  background:var(--hud);transform:scaleX(0);transition:transform .2s;
+}
+nav a:hover{color:var(--hud);background:var(--hud-ghost)}
+nav a:hover::before{transform:scaleX(1)}
+nav a.active{color:var(--hud);background:var(--hud-ghost)}
+nav a.active::before{transform:scaleX(1)}
+
+/* ── LAYOUT ────────────────────────────────────────────── */
+.wrap{max-width:1240px;margin:0 auto;padding:0 2rem}
+main{padding-bottom:5rem}
+section{padding:3.6rem 0}
+
+/* ── HERO / BRIEFING HEADER ────────────────────────────── */
+.hero{position:relative;padding:3.5rem 0 3rem;border-bottom:1px solid var(--line)}
+.hero-frame{
+  position:relative;background:var(--panel);
+  border:1px solid var(--line-hot);padding:2.6rem 2.4rem;
+}
+.hero-frame::before,.hero-frame::after{
+  content:'';position:absolute;width:26px;height:26px;border:2px solid var(--hud);
+}
+.hero-frame::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.hero-frame::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+
+.tagline{
+  font-family:var(--data);font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--warn);display:flex;align-items:center;gap:.9rem;margin-bottom:1.1rem;
+}
+.tagline::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--line-hot),transparent)}
+
+h1{
+  font-family:var(--disp);font-weight:700;
+  font-size:clamp(2.4rem,6.5vw,5rem);line-height:1;letter-spacing:.02em;
+  text-transform:uppercase;color:var(--txt-hi);margin-bottom:1.1rem;
+}
+h1 em{font-style:normal;color:var(--hud);text-shadow:0 0 26px rgba(94,243,224,.35)}
+
+.lede{font-size:clamp(1rem,1.5vw,1.18rem);max-width:62ch;color:var(--txt);font-weight:300}
+.lede strong{color:var(--txt-hi);font-weight:500}
+
+/* ── SECTION HEADERS ───────────────────────────────────── */
+h2{
+  font-family:var(--disp);font-weight:600;
+  font-size:clamp(1.5rem,3vw,2.2rem);letter-spacing:.05em;text-transform:uppercase;
+  color:var(--txt-hi);margin-bottom:1.5rem;
+  display:flex;align-items:center;gap:1rem;
+}
+h2::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--line-hot),transparent)}
+h2 .num{
+  font-family:var(--data);font-size:.72rem;letter-spacing:.2em;
+  color:var(--hud);background:var(--hud-ghost);
+  border:1px solid var(--line-hot);padding:.32rem .7rem;
+  white-space:nowrap;flex-shrink:0;
+}
+h3{
+  font-family:var(--disp);font-weight:600;font-size:1.15rem;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--txt-hi);margin:1.9rem 0 .7rem;
+}
+h4{
+  font-family:var(--data);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--hud);margin:1.6rem 0 .7rem;
+  padding-left:.7rem;border-left:2px solid var(--hud);
+}
+p{margin-bottom:1rem;max-width:74ch}
+p:last-child{margin-bottom:0}
+a{color:var(--hud)}
+strong{color:var(--txt-hi);font-weight:500}
+
+/* ── GRID ──────────────────────────────────────────────── */
+.grid{display:grid;gap:1.2rem}
+.g2{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(262px,1fr))}
+
+/* ── CARD (notched HUD panel) ──────────────────────────── */
+.card{
+  background:var(--panel);border:1px solid var(--line);
+  padding:1.5rem 1.5rem 1.6rem;position:relative;
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));
+  transition:.2s;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;width:3px;height:38px;background:var(--hud);
+}
+.card:hover{background:var(--panel-2);border-color:var(--line-hot);transform:translateY(-2px)}
+.card h3{margin-top:0;font-size:1.06rem}
+.card p{font-size:.92rem}
+.card .tag{
+  font-family:var(--data);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--txt-dim);display:block;margin-bottom:.55rem;
+}
+.card.warn::before{background:var(--warn)}
+.card.alert::before{background:var(--alert)}
+.card.ok::before{background:var(--ok)}
+.card.dim::before{background:var(--txt-dim)}
+
+/* ── DATA PANEL (mission parameters) ───────────────────── */
+.dossier{
+  background:var(--panel);border:1px solid var(--line-hot);
+  margin:1.8rem 0;position:relative;
+  clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));
+}
+.dossier::before{
+  content:attr(data-label);display:block;
+  font-family:var(--data);font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--bg);background:var(--hud);padding:.42rem 1.2rem;
+}
+.field{
+  display:flex;gap:1.2rem;align-items:baseline;
+  padding:.62rem 1.4rem;border-bottom:1px solid rgba(27,44,51,.6);
+}
+.field:last-child{border-bottom:none;padding-bottom:1.1rem}
+.field .k{
+  font-family:var(--data);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--hud-dim);min-width:200px;flex-shrink:0;
+}
+.field .k::before{content:'\25B8 ';color:var(--line-hot)}
+.field .v{color:var(--txt);font-size:.93rem}
+
+/* ── REDACTED ──────────────────────────────────────────── */
+.redacted{
+  background:#000;color:transparent;padding:0 .4em;
+  border:1px solid var(--line);user-select:none;transition:color .35s;
+}
+.redacted:hover{color:#1e2c31}
+
+/* ── NOTE / ADVISORY BLOCK ─────────────────────────────── */
+.note{
+  background:var(--bg-2);border:1px solid var(--line);border-left:3px solid var(--hud);
+  padding:1.1rem 1.4rem;margin:1.7rem 0;font-size:.93rem;
+}
+.note .lbl{
+  font-family:var(--data);font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--hud);display:block;margin-bottom:.45rem;
+}
+.note.warn{border-left-color:var(--warn)}
+.note.warn .lbl{color:var(--warn)}
+.note.corp{border-left-color:var(--alert)}
+.note.corp .lbl{color:var(--alert)}
+
+/* ── LISTS ─────────────────────────────────────────────── */
+ul.clean,ol.clean{list-style:none;margin:1rem 0}
+ul.clean li,ol.clean li{
+  padding:.5rem 0 .5rem 1.7rem;position:relative;
+  border-bottom:1px solid rgba(27,44,51,.5);font-size:.93rem;
+}
+ul.clean li::before{content:'\25B8';position:absolute;left:.2rem;color:var(--hud);font-size:.82rem}
+ol.clean{counter-reset:c}
+ol.clean li{padding-left:2.4rem}
+ol.clean li::before{
+  counter-increment:c;content:counter(c,decimal-leading-zero);
+  position:absolute;left:0;top:.55rem;
+  font-family:var(--data);font-size:.68rem;color:var(--hud);
+  border:1px solid var(--line-hot);padding:.05rem .32rem;
+}
+
+/* ── TABLE ─────────────────────────────────────────────── */
+table{width:100%;border-collapse:collapse;margin:1.4rem 0;font-size:.9rem}
+th{
+  font-family:var(--data);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;
+  text-align:left;padding:.7rem .9rem;color:var(--hud);
+  background:var(--hud-ghost);border-bottom:1px solid var(--hud-dim);
+}
+td{padding:.7rem .9rem;border-bottom:1px solid var(--line);vertical-align:top}
+tr:hover td{background:rgba(94,243,224,.03)}
+
+/* ── BUTTONS ───────────────────────────────────────────── */
+.btn{
+  display:inline-block;font-family:var(--data);font-size:.72rem;
+  letter-spacing:.18em;text-transform:uppercase;
+  padding:.8rem 1.6rem;margin:.35rem .45rem .35rem 0;
+  border:1px solid var(--hud);color:var(--hud);text-decoration:none;
+  background:transparent;transition:.18s;position:relative;
+  clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,9px 100%,0 calc(100% - 9px));
+}
+.btn:hover{background:var(--hud);color:var(--bg);box-shadow:0 0 22px rgba(94,243,224,.3)}
+.btn.solid{background:var(--hud);color:var(--bg)}
+.btn.solid:hover{background:#8ef8e9;box-shadow:0 0 28px rgba(94,243,224,.45)}
+.btn.ghost{border-color:var(--line-hot);color:var(--txt-dim)}
+.btn.ghost:hover{border-color:var(--hud);color:var(--hud);background:var(--hud-ghost);box-shadow:none}
+
+/* ── FOOTER ────────────────────────────────────────────── */
+footer{
+  border-top:1px solid var(--line-hot);background:var(--bg-2);
+  padding:2.2rem 0;font-family:var(--data);font-size:.68rem;
+  color:var(--txt-dim);letter-spacing:.14em;text-transform:uppercase;
+}
+footer .wrap{display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+footer a{color:var(--hud);text-decoration:none}
+
+/* ── ANIMATION ─────────────────────────────────────────── */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.rise{animation:rise .55s cubic-bezier(.2,.7,.3,1) both}
+.d1{animation-delay:.07s}.d2{animation-delay:.14s}
+.d3{animation-delay:.21s}.d4{animation-delay:.28s}
+
+@media (prefers-reduced-motion:reduce){
+  .rise{animation:none}.sweep{display:none}.blip{animation:none}
+  html{scroll-behavior:auto}
+}
+
+@media (max-width:680px){
+  .wrap{padding:0 1.1rem}
+  .statusbar .wrap{gap:1rem;padding:.4rem 1.1rem}
+  .nav-inner{padding:0 1.1rem}
+  nav ul{margin-left:0;width:100%;border-top:1px solid var(--line)}
+  nav a{padding:.7rem .8rem}
+  .hero-frame{padding:1.8rem 1.4rem}
+  .field{flex-direction:column;gap:.15rem}
+  .field .k{min-width:0}
+  h2{flex-wrap:wrap}
+}
+
+/* ── MISSION PARAMETER READOUT (AC6 briefing grid) ─────── */
+.paramgrid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:1px;margin-top:2.2rem;background:var(--line);
+  border:1px solid var(--line);
+}
+.param{
+  background:var(--bg-2);padding:.75rem .95rem;
+  display:flex;flex-direction:column;gap:.15rem;
+}
+.param .pk{
+  font-family:var(--data);font-size:.6rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--txt-dim);
+}
+.param .pv{
+  font-family:var(--disp);font-weight:500;font-size:.92rem;
+  letter-spacing:.05em;text-transform:uppercase;color:var(--hud);
+}
+.param .pv.warn{color:var(--warn)}
+.param .pv.alert{color:var(--alert)}
+
+</style>
+</head>
+<body>
+<div class="sweep"></div>
+<div class="statusbar"><div class="wrap">
+  <span><span class="blip"></span>LINK <b>ACTIVE</b></span>
+  <span>MODE <b>CLIENT DATA</b></span>
+  <span>AREA <b>CORPORATE REGISTRY</b></span>
+  <span>DOC <b>ORIENTATION</b></span>
+  <span style="margin-left:auto">CLR <b>CON-3</b></span>
+</div></div>
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="brand">ATLAS <span>/ KX-19</span></a>
+    <ul>
+      <li><a href="index.html">Briefing</a></li>
+      <li><a href="setting.html">The World</a></li>
+      <li><a href="factions.html" class="active">Employers</a></li>
+      <li><a href="pilot-creation.html">Build a Pilot</a></li>
+      <li><a href="rules.html">Rules</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap"><div class="hero-frame">
+    <div class="tagline rise">Corporate Orientation · Contract Security</div>
+    <h1 class="rise d1">Your <em>Employers</em></h1>
+    <p class="lede rise d2">
+      In 2554 the difference between a government and a corporation is mostly paperwork.
+      This is who signs your cheque — and who else might be on the ground.
+    </p>
+  </div></div>
+</header>
+
+<main>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">OP.01 // EMPLOYER</span>Atlas Corporation</h2>
+    <div class="dossier" data-label="Employer of Record">
+      <div class="field"><span class="k">Founded</span><span class="v">2201, Solenne Primus</span></div>
+      <div class="field"><span class="k">Industry</span><span class="v">Planetary terraforming and expansion contracting</span></div>
+      <div class="field"><span class="k">Motto</span><span class="v">"Ground Worth Standing On"</span></div>
+      <div class="field"><span class="k">Colours</span><span class="v">Slate grey and terracotta</span></div>
+      <div class="field"><span class="k">Reputation</span><span class="v">The careful, professional choice in terraforming</span></div>
+      <div class="field"><span class="k">Your Division</span><span class="v">Contract Security — escort, clearance, response</span></div>
+    </div>
+    <p>
+      Atlas's pitch is competence. They move into worlds nobody else will touch, make them liveable,
+      and set the price everyone downstream pays for a century. That business model depends entirely
+      on <strong>getting there first</strong>.
+    </p>
+    <p>
+      Contractors who've done more than one Atlas rotation will tell you the pay is reliable and the
+      risk assessments are optimistic. Both things are true.
+    </p>
+    <div class="note corp">
+      <span class="lbl">Internal Structure — What You'd Know</span>
+      <strong>TerraOps</strong> runs the actual terraforming and sets your schedule.
+      <strong>Contract Security</strong> is you, commanded by Capt. Eira Solberg, who is fair and
+      visibly frustrated most of the time. There are other divisions. You haven't been introduced.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">OP.02 // UNCONFIRMED</span>Who Else Is Out There</h2>
+    <p>
+      Atlas's official position is that KX-19 is an uncontested claim. Contractors who spend time in
+      the field have started to doubt that. None of the following is confirmed, and repeating it
+      around Site Command is a good way to get a talking-to.
+    </p>
+    <div class="grid g3" style="margin-top:2rem">
+      <div class="card oxblood rise">
+        <span class="tag">Rumoured Presence</span>
+        <h3>Kestrel Dynamics</h3>
+        <p>A private military corporation. Doesn't do terraforming; does do war. If they're here, they're not here to make anything liveable. Their pilots publicise kill counts like sports statistics.</p>
+      </div>
+      <div class="card sage rise d1">
+        <span class="tag">Rumoured Presence</span>
+        <h3>Verdance Bio-Concern</h3>
+        <p>Conservation and xenobiology. Soft colours, clean press releases, a lot of use of the word "stewardship." Nobody in Contract Security has met one. Their research stations reportedly pay very well for Bloomlands samples.</p>
+      </div>
+      <div class="card rise d2" style="border-top-color:#8A8378">
+        <span class="tag">Rumoured Presence</span>
+        <h3>The Salt Line</h3>
+        <p>Not a company. A salvage and information network with no registered charter and no fixed base. If they exist, they're already inside somebody's supply chain. Possibly yours.</p>
+      </div>
+    </div>
+    <div class="note warn">
+      <span class="lbl">Player Note</span>
+      Your pilot has <em>heard of</em> these organisations the way you've heard of companies that
+      don't operate in your town. Whether any of them are actually on Vareth is not something you know.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">OP.03 // CONTEXT</span>What "Corporation" Means in 2554</h2>
+    <p>
+      Corpro-states aren't companies in the modern sense. They hold territory, field militaries,
+      issue currency, run courts, and negotiate treaties. Working for one isn't like having a job.
+      It's closer to citizenship with a termination clause.
+    </p>
+    <table>
+      <tr><th style="width:26%">Classification</th><th>What It Means For You</th></tr>
+      <tr><td><strong>CIV</strong></td><td>Standard employee. Basic protections.</td></tr>
+      <tr><td><strong>CON</strong></td><td><strong>You are here.</strong> Contractor. Outsourced, deniable, and cheaper to replace than to protect.</td></tr>
+      <tr><td><strong>SPEC</strong></td><td>Specialist. Technically valuable enough that the company will actually try to keep you alive.</td></tr>
+      <tr><td><strong>EXEC</strong></td><td>Leadership. Rarely lands on planets like this one.</td></tr>
+      <tr><td><strong>ASSET</strong></td><td>Survival considered commercially critical. Very few people. Very expensive people.</td></tr>
+    </table>
+    <div class="note">
+      <span class="lbl">Worth Sitting With</span>
+      You are a <strong>CON</strong>. That's not an insult — it's a line in a spreadsheet, and it
+      means the company has already calculated what losing you costs. Deciding how your pilot feels
+      about that is good character work.
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>ATLAS CORPORATION · GROUND WORTH STANDING ON</div>
+    <div><a href="pilot-creation.html">Next: Build a Pilot →</a></div>
+  </div>
+</footer>
+</body>
+</html>

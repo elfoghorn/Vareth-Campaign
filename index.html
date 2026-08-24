@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VARETH — Atlas Contractor Onboarding</title>
+<meta name="description" content="Player briefing portal for the Vareth campaign — a Lancer TTRPG setting.">
+<style>
+/* ══════════════════════════════════════════════════════════
+   ATLAS CORPORATION — CONTRACT SECURITY DIVISION
+   MISSION BRIEFING INTERFACE  ::  SITE KX-19
+   ══════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+:root{
+  --bg:        #05080a;
+  --bg-2:      #080d10;
+  --panel:     #0b1216;
+  --panel-2:   #0f171c;
+  --line:      #1b2c33;
+  --line-hot:  #2b4a54;
+
+  --hud:       #5ef3e0;
+  --hud-dim:   #2e8f86;
+  --hud-ghost: rgba(94,243,224,.08);
+  --warn:      #ff9d2e;
+  --alert:     #ff4d4d;
+  --ok:        #7ee787;
+
+  --txt:       #b9ccd2;
+  --txt-dim:   #5f7982;
+  --txt-hi:    #e6f6f8;
+
+  --disp: 'Chakra Petch', sans-serif;
+  --data: 'Share Tech Mono', monospace;
+
+  --notch: 14px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+body{
+  background:var(--bg);
+  color:var(--txt);
+  font-family:var(--disp);
+  font-weight:300;
+  font-size:16.5px;
+  line-height:1.75;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* ── ambient grid + scanlines + vignette ───────────────── */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:900;
+  background-image:
+    linear-gradient(rgba(94,243,224,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(94,243,224,.028) 1px,transparent 1px);
+  background-size:52px 52px;
+}
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:901;
+  background:
+    repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px),
+    radial-gradient(ellipse at 50% 42%,transparent 45%,rgba(0,0,0,.82) 100%);
+}
+
+/* scanning sweep */
+@keyframes sweep{0%{top:-15%}100%{top:115%}}
+.sweep{
+  position:fixed;left:0;right:0;height:130px;z-index:902;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(94,243,224,.035),transparent);
+  animation:sweep 8.5s linear infinite;
+}
+
+/* ── TOP STATUS RAIL ───────────────────────────────────── */
+.statusbar{
+  background:var(--bg-2);border-bottom:1px solid var(--line);
+  font-family:var(--data);font-size:.66rem;letter-spacing:.18em;
+  color:var(--txt-dim);text-transform:uppercase;
+}
+.statusbar .wrap{display:flex;gap:2rem;flex-wrap:wrap;padding:.42rem 2rem}
+.statusbar b{color:var(--hud);font-weight:400}
+.blip{
+  display:inline-block;width:6px;height:6px;background:var(--ok);
+  border-radius:50%;margin-right:.45rem;vertical-align:middle;
+  animation:pulse 1.9s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 6px var(--ok)}50%{opacity:.35;box-shadow:none}}
+
+/* ── NAV ───────────────────────────────────────────────── */
+nav{
+  position:sticky;top:0;z-index:500;
+  background:rgba(8,13,16,.95);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line-hot);
+}
+.nav-inner{max-width:1240px;margin:0 auto;padding:0 2rem;display:flex;align-items:stretch;gap:1.5rem;flex-wrap:wrap}
+.brand{
+  font-family:var(--disp);font-weight:700;font-size:1rem;letter-spacing:.24em;
+  color:var(--hud);text-decoration:none;text-transform:uppercase;
+  display:flex;align-items:center;gap:.6rem;padding:.9rem 0;white-space:nowrap;
+}
+.brand::before{content:'\25C6';font-size:.7rem;color:var(--warn)}
+.brand span{color:var(--txt-dim);font-weight:300}
+nav ul{list-style:none;display:flex;margin-left:auto;flex-wrap:wrap}
+nav a{
+  display:block;padding:.95rem 1.15rem;
+  font-family:var(--data);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--txt-dim);text-decoration:none;position:relative;transition:.18s;
+}
+nav a::before{
+  content:'';position:absolute;left:0;right:0;bottom:0;height:2px;
+  background:var(--hud);transform:scaleX(0);transition:transform .2s;
+}
+nav a:hover{color:var(--hud);background:var(--hud-ghost)}
+nav a:hover::before{transform:scaleX(1)}
+nav a.active{color:var(--hud);background:var(--hud-ghost)}
+nav a.active::before{transform:scaleX(1)}
+
+/* ── LAYOUT ────────────────────────────────────────────── */
+.wrap{max-width:1240px;margin:0 auto;padding:0 2rem}
+main{padding-bottom:5rem}
+section{padding:3.6rem 0}
+
+/* ── HERO / BRIEFING HEADER ────────────────────────────── */
+.hero{position:relative;padding:3.5rem 0 3rem;border-bottom:1px solid var(--line)}
+.hero-frame{
+  position:relative;background:var(--panel);
+  border:1px solid var(--line-hot);padding:2.6rem 2.4rem;
+}
+.hero-frame::before,.hero-frame::after{
+  content:'';position:absolute;width:26px;height:26px;border:2px solid var(--hud);
+}
+.hero-frame::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.hero-frame::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+
+.tagline{
+  font-family:var(--data);font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--warn);display:flex;align-items:center;gap:.9rem;margin-bottom:1.1rem;
+}
+.tagline::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--line-hot),transparent)}
+
+h1{
+  font-family:var(--disp);font-weight:700;
+  font-size:clamp(2.4rem,6.5vw,5rem);line-height:1;letter-spacing:.02em;
+  text-transform:uppercase;color:var(--txt-hi);margin-bottom:1.1rem;
+}
+h1 em{font-style:normal;color:var(--hud);text-shadow:0 0 26px rgba(94,243,224,.35)}
+
+.lede{font-size:clamp(1rem,1.5vw,1.18rem);max-width:62ch;color:var(--txt);font-weight:300}
+.lede strong{color:var(--txt-hi);font-weight:500}
+
+/* ── SECTION HEADERS ───────────────────────────────────── */
+h2{
+  font-family:var(--disp);font-weight:600;
+  font-size:clamp(1.5rem,3vw,2.2rem);letter-spacing:.05em;text-transform:uppercase;
+  color:var(--txt-hi);margin-bottom:1.5rem;
+  display:flex;align-items:center;gap:1rem;
+}
+h2::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--line-hot),transparent)}
+h2 .num{
+  font-family:var(--data);font-size:.72rem;letter-spacing:.2em;
+  color:var(--hud);background:var(--hud-ghost);
+  border:1px solid var(--line-hot);padding:.32rem .7rem;
+  white-space:nowrap;flex-shrink:0;
+}
+h3{
+  font-family:var(--disp);font-weight:600;font-size:1.15rem;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--txt-hi);margin:1.9rem 0 .7rem;
+}
+h4{
+  font-family:var(--data);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--hud);margin:1.6rem 0 .7rem;
+  padding-left:.7rem;border-left:2px solid var(--hud);
+}
+p{margin-bottom:1rem;max-width:74ch}
+p:last-child{margin-bottom:0}
+a{color:var(--hud)}
+strong{color:var(--txt-hi);font-weight:500}
+
+/* ── GRID ──────────────────────────────────────────────── */
+.grid{display:grid;gap:1.2rem}
+.g2{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(262px,1fr))}
+
+/* ── CARD (notched HUD panel) ──────────────────────────── */
+.card{
+  background:var(--panel);border:1px solid var(--line);
+  padding:1.5rem 1.5rem 1.6rem;position:relative;
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));
+  transition:.2s;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;width:3px;height:38px;background:var(--hud);
+}
+.card:hover{background:var(--panel-2);border-color:var(--line-hot);transform:translateY(-2px)}
+.card h3{margin-top:0;font-size:1.06rem}
+.card p{font-size:.92rem}
+.card .tag{
+  font-family:var(--data);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--txt-dim);display:block;margin-bottom:.55rem;
+}
+.card.warn::before{background:var(--warn)}
+.card.alert::before{background:var(--alert)}
+.card.ok::before{background:var(--ok)}
+.card.dim::before{background:var(--txt-dim)}
+
+/* ── DATA PANEL (mission parameters) ───────────────────── */
+.dossier{
+  background:var(--panel);border:1px solid var(--line-hot);
+  margin:1.8rem 0;position:relative;
+  clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));
+}
+.dossier::before{
+  content:attr(data-label);display:block;
+  font-family:var(--data);font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--bg);background:var(--hud);padding:.42rem 1.2rem;
+}
+.field{
+  display:flex;gap:1.2rem;align-items:baseline;
+  padding:.62rem 1.4rem;border-bottom:1px solid rgba(27,44,51,.6);
+}
+.field:last-child{border-bottom:none;padding-bottom:1.1rem}
+.field .k{
+  font-family:var(--data);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--hud-dim);min-width:200px;flex-shrink:0;
+}
+.field .k::before{content:'\25B8 ';color:var(--line-hot)}
+.field .v{color:var(--txt);font-size:.93rem}
+
+/* ── REDACTED ──────────────────────────────────────────── */
+.redacted{
+  background:#000;color:transparent;padding:0 .4em;
+  border:1px solid var(--line);user-select:none;transition:color .35s;
+}
+.redacted:hover{color:#1e2c31}
+
+/* ── NOTE / ADVISORY BLOCK ─────────────────────────────── */
+.note{
+  background:var(--bg-2);border:1px solid var(--line);border-left:3px solid var(--hud);
+  padding:1.1rem 1.4rem;margin:1.7rem 0;font-size:.93rem;
+}
+.note .lbl{
+  font-family:var(--data);font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--hud);display:block;margin-bottom:.45rem;
+}
+.note.warn{border-left-color:var(--warn)}
+.note.warn .lbl{color:var(--warn)}
+.note.corp{border-left-color:var(--alert)}
+.note.corp .lbl{color:var(--alert)}
+
+/* ── LISTS ─────────────────────────────────────────────── */
+ul.clean,ol.clean{list-style:none;margin:1rem 0}
+ul.clean li,ol.clean li{
+  padding:.5rem 0 .5rem 1.7rem;position:relative;
+  border-bottom:1px solid rgba(27,44,51,.5);font-size:.93rem;
+}
+ul.clean li::before{content:'\25B8';position:absolute;left:.2rem;color:var(--hud);font-size:.82rem}
+ol.clean{counter-reset:c}
+ol.clean li{padding-left:2.4rem}
+ol.clean li::before{
+  counter-increment:c;content:counter(c,decimal-leading-zero);
+  position:absolute;left:0;top:.55rem;
+  font-family:var(--data);font-size:.68rem;color:var(--hud);
+  border:1px solid var(--line-hot);padding:.05rem .32rem;
+}
+
+/* ── TABLE ─────────────────────────────────────────────── */
+table{width:100%;border-collapse:collapse;margin:1.4rem 0;font-size:.9rem}
+th{
+  font-family:var(--data);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;
+  text-align:left;padding:.7rem .9rem;color:var(--hud);
+  background:var(--hud-ghost);border-bottom:1px solid var(--hud-dim);
+}
+td{padding:.7rem .9rem;border-bottom:1px solid var(--line);vertical-align:top}
+tr:hover td{background:rgba(94,243,224,.03)}
+
+/* ── BUTTONS ───────────────────────────────────────────── */
+.btn{
+  display:inline-block;font-family:var(--data);font-size:.72rem;
+  letter-spacing:.18em;text-transform:uppercase;
+  padding:.8rem 1.6rem;margin:.35rem .45rem .35rem 0;
+  border:1px solid var(--hud);color:var(--hud);text-decoration:none;
+  background:transparent;transition:.18s;position:relative;
+  clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,9px 100%,0 calc(100% - 9px));
+}
+.btn:hover{background:var(--hud);color:var(--bg);box-shadow:0 0 22px rgba(94,243,224,.3)}
+.btn.solid{background:var(--hud);color:var(--bg)}
+.btn.solid:hover{background:#8ef8e9;box-shadow:0 0 28px rgba(94,243,224,.45)}
+.btn.ghost{border-color:var(--line-hot);color:var(--txt-dim)}
+.btn.ghost:hover{border-color:var(--hud);color:var(--hud);background:var(--hud-ghost);box-shadow:none}
+
+/* ── FOOTER ────────────────────────────────────────────── */
+footer{
+  border-top:1px solid var(--line-hot);background:var(--bg-2);
+  padding:2.2rem 0;font-family:var(--data);font-size:.68rem;
+  color:var(--txt-dim);letter-spacing:.14em;text-transform:uppercase;
+}
+footer .wrap{display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+footer a{color:var(--hud);text-decoration:none}
+
+/* ── ANIMATION ─────────────────────────────────────────── */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.rise{animation:rise .55s cubic-bezier(.2,.7,.3,1) both}
+.d1{animation-delay:.07s}.d2{animation-delay:.14s}
+.d3{animation-delay:.21s}.d4{animation-delay:.28s}
+
+@media (prefers-reduced-motion:reduce){
+  .rise{animation:none}.sweep{display:none}.blip{animation:none}
+  html{scroll-behavior:auto}
+}
+
+@media (max-width:680px){
+  .wrap{padding:0 1.1rem}
+  .statusbar .wrap{gap:1rem;padding:.4rem 1.1rem}
+  .nav-inner{padding:0 1.1rem}
+  nav ul{margin-left:0;width:100%;border-top:1px solid var(--line)}
+  nav a{padding:.7rem .8rem}
+  .hero-frame{padding:1.8rem 1.4rem}
+  .field{flex-direction:column;gap:.15rem}
+  .field .k{min-width:0}
+  h2{flex-wrap:wrap}
+}
+
+/* ── MISSION PARAMETER READOUT (AC6 briefing grid) ─────── */
+.paramgrid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:1px;margin-top:2.2rem;background:var(--line);
+  border:1px solid var(--line);
+}
+.param{
+  background:var(--bg-2);padding:.75rem .95rem;
+  display:flex;flex-direction:column;gap:.15rem;
+}
+.param .pk{
+  font-family:var(--data);font-size:.6rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--txt-dim);
+}
+.param .pv{
+  font-family:var(--disp);font-weight:500;font-size:.92rem;
+  letter-spacing:.05em;text-transform:uppercase;color:var(--hud);
+}
+.param .pv.warn{color:var(--warn)}
+.param .pv.alert{color:var(--alert)}
+
+</style>
+</head>
+<body>
+<div class="sweep"></div>
+<div class="statusbar"><div class="wrap">
+  <span><span class="blip"></span>LINK <b>ACTIVE</b></span>
+  <span>MODE <b>BRIEFING</b></span>
+  <span>AREA <b>SITE KX-19 / ASHFALL DELTA</b></span>
+  <span>DOC <b>PACKET 7-A</b></span>
+  <span style="margin-left:auto">CLR <b>CON-3</b></span>
+</div></div>
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="brand">ATLAS <span>/ KX-19</span></a>
+    <ul>
+      <li><a href="index.html" class="active">Briefing</a></li>
+      <li><a href="setting.html">The World</a></li>
+      <li><a href="factions.html">Employers</a></li>
+      <li><a href="pilot-creation.html">Build a Pilot</a></li>
+      <li><a href="rules.html">Rules</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap"><div class="hero-frame">
+    <div class="tagline rise">Contract Security Division · Onboarding Packet 7-A</div>
+    <h1 class="rise d1">Welcome to<br><em>Vareth</em></h1>
+    <p class="lede rise d2">
+      You have been contracted by <strong>Atlas Corporation</strong> to provide armed escort
+      and hazard clearance on survey site KX-19. The work is dangerous. The pay reflects that.
+      Your frame is waiting in the hangar.
+    </p>
+    <div class="paramgrid rise d3">
+      <div class="param"><span class="pk">Client</span><span class="pv">Atlas Corporation</span></div>
+      <div class="param"><span class="pk">Area</span><span class="pv">Ashfall Delta</span></div>
+      <div class="param"><span class="pk">Hazard</span><span class="pv alert">Category III</span></div>
+      <div class="param"><span class="pk">Reward</span><span class="pv">Hazard scale + bonus</span></div>
+      <div class="param"><span class="pk">Clearance</span><span class="pv">CON-3</span></div>
+      <div class="param"><span class="pk">Support</span><span class="pv warn">None assigned</span></div>
+    </div>
+    <div style="margin-top:2rem" class="rise d4">
+      <a href="pilot-creation.html" class="btn solid">Build Your Pilot</a>
+      <a href="setting.html" class="btn">Read the Briefing</a>
+    </div>
+  </div></div>
+</header>
+
+<main>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">OP.01 // POSITION SUMMARY</span>What You've Signed Up For</h2>
+    <div class="grid g3">
+      <div class="card rise">
+        <span class="tag">Employer</span>
+        <h3>Atlas Corporation</h3>
+        <p>A terraforming megacorp with first-claim rights to Vareth. You are Contract Security — escort, clearance, and response. You are not, technically, soldiers.</p>
+      </div>
+      <div class="card slate rise d1">
+        <span class="tag">Posting</span>
+        <h3>Site Zero</h3>
+        <p>Atlas's primary dome complex in the Ashfall Delta. Roughly 2,500 personnel. Barracks, hangar, medical, and a bar called the Undertow.</p>
+      </div>
+      <div class="card amber rise d2">
+        <span class="tag">Hazard Classification</span>
+        <h3>Category III</h3>
+        <p>Aggressive native fauna. Residual pre-Diaspora infrastructure. Atmosphere requires breather-assist outside domes. Hazard pay applies.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">OP.02 // CONTRACT TERMS</span>The Fine Print</h2>
+    <div class="dossier" data-label="Employment Record — Contract Security">
+      <div class="field"><span class="k">Contract Type</span><span class="v">Fixed-term, renewable. Classification: <strong>CON</strong> (Contractor)</span></div>
+      <div class="field"><span class="k">Rotation Length</span><span class="v">18 standard months, extensions available</span></div>
+      <div class="field"><span class="k">Equipment</span><span class="v">GMS-pattern frame issued on arrival. Requisition upgrades earned through service.</span></div>
+      <div class="field"><span class="k">Medical Coverage</span><span class="v">Full, deducted at source</span></div>
+      <div class="field"><span class="k">Housing</span><span class="v">Provided. Deducted at source.</span></div>
+      <div class="field"><span class="k">Disclosure Agreement</span><span class="v">Signed. Section 12.4 applies to all site observations.</span></div>
+      <div class="field"><span class="k">Prior Incident Reports</span><span class="v"><span class="redacted">████████████████████████</span> — available on request to Division Command</span></div>
+    </div>
+    <div class="note corp">
+      <span class="lbl">Advisory — TerraOps</span>
+      Contractors are reminded that all anomalous field encounters are to be logged under approved
+      terminology. Speculation regarding site history is not a productive use of shift hours.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">OP.03 // START HERE</span>Player Orientation</h2>
+    <p>This is a <strong>Lancer</strong> campaign. You'll be playing mech pilots — small people in big machines, working a dangerous job for a company that doesn't tell you everything. Four pages, in the order you should read them:</p>
+    <div class="grid g2" style="margin-top:2rem">
+      <div class="card slate rise">
+        <span class="tag">Read First</span>
+        <h3>The World</h3>
+        <p>What Vareth is, what the job looks like, where you'll be living, and the parts of the official story that don't quite add up.</p>
+        <a href="setting.html" class="btn ghost" style="margin-top:.8rem">Open →</a>
+      </div>
+      <div class="card rise d1">
+        <span class="tag">Read Second</span>
+        <h3>Your Employers</h3>
+        <p>Atlas, and the rumours about who else is on the ground. Useful for deciding how your pilot feels about corporate work.</p>
+        <a href="factions.html" class="btn ghost" style="margin-top:.8rem">Open →</a>
+      </div>
+      <div class="card amber rise d2">
+        <span class="tag">The Main Event</span>
+        <h3>Build a Pilot</h3>
+        <p>Everything you need for session zero: mechanical setup, background prompts, and the six questions that plug your character into the world.</p>
+        <a href="pilot-creation.html" class="btn ghost" style="margin-top:.8rem">Open →</a>
+      </div>
+      <div class="card sage rise d3">
+        <span class="tag">Reference</span>
+        <h3>Rules &amp; Resources</h3>
+        <p>Where to get Lancer legally and free, the house rules for this table, and how downtime works.</p>
+        <a href="rules.html" class="btn ghost" style="margin-top:.8rem">Open →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">OP.04 // TONE</span>What Kind of Game This Is</h2>
+    <div class="grid g2">
+      <div>
+        <h4>Expect</h4>
+        <ul class="clean">
+          <li>Mech combat with real tactical weight</li>
+          <li>A planet that reveals itself slowly</li>
+          <li>Downtime that matters as much as missions</li>
+          <li>NPCs whose lives continue without you</li>
+          <li>Moral choices with no clean answer</li>
+          <li>Corporate employers who are never fully honest</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Don't Expect</h4>
+        <ul class="clean">
+          <li>A clear villain to defeat</li>
+          <li>An employer worth trusting</li>
+          <li>Being the good guys</li>
+          <li>Every mystery answered</li>
+        </ul>
+        <div class="note warn" style="margin-top:1.6rem">
+          <span class="lbl">Table Note</span>
+          This campaign runs on the idea that <strong>nobody here is clean</strong> — including the people
+          signing your paycheque, and eventually including you. Build a pilot who can be
+          compromised and still be interesting.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>ATLAS CORPORATION · GROUND WORTH STANDING ON</div>
+    <div>Site KX-19 · Contract Security · Packet 7-A · 2554</div>
+  </div>
+</footer>
+</body>
+</html>
