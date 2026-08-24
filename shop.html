@@ -343,8 +343,6 @@ footer a{color:var(--hud);text-decoration:none}
 }
 .param .pv.warn{color:var(--warn)}
 .param .pv.alert{color:var(--alert)}
-
-</style>
 /* ── REQUISITION SHOP ──────────────────────────────────── */
 .shop-tier {
   margin: 2.6rem 0;
@@ -361,30 +359,36 @@ footer a{color:var(--hud);text-decoration:none}
   font-size: .68rem; opacity: .85; letter-spacing: .1em;
 }
 .shop-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1px; background: var(--line); padding: 1px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.1rem; margin-top: 1.2rem;
 }
 .shopitem {
-  background: var(--panel); padding: 1.1rem 1.2rem;
-  display: flex; flex-direction: column; gap: .4rem;
+  background: var(--panel); border: 1px solid var(--line);
+  padding: 1.5rem 1.4rem 1.3rem; position: relative;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  display: flex; flex-direction: column; gap: .65rem;
+  transition: transform .2s, background .2s, border-color .2s;
 }
+.shopitem::before {
+  content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 34px;
+  background: var(--hud); transition: background .2s;
+}
+.shopitem:hover { background: var(--panel-2); border-color: var(--line-hot); transform: translateY(-3px); }
 .shopitem .si-name {
-  font-family: var(--disp); font-weight: 600; font-size: 1rem;
-  letter-spacing: .03em; text-transform: uppercase; color: var(--txt-hi);
+  font-family: var(--disp); font-weight: 600; font-size: 1.04rem; line-height: 1.25;
+  letter-spacing: .02em; text-transform: uppercase; color: var(--txt-hi);
 }
 .shopitem .si-meta {
-  font-family: var(--data); font-size: .64rem; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--txt-dim);
+  font-family: var(--data); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--hud-dim); padding-bottom: .55rem; border-bottom: 1px dashed var(--line);
 }
 .shopitem .si-flavor {
-  font-size: .86rem; color: var(--txt); font-style: italic; opacity: .9;
+  font-size: .88rem; color: var(--txt); font-style: italic; opacity: .92; flex: 1;
 }
-.shopitem .si-cost {
-  font-family: var(--data); font-size: .82rem; color: var(--hud); margin-top: .3rem;
-}
-.shopitem.locked { opacity: .4; filter: grayscale(.55); }
-.shopitem.locked .si-cost { color: var(--txt-dim); }
-.lock-icon { color: var(--alert); margin-right: .4rem; }
+.shopitem.locked { opacity: .4; filter: grayscale(.6); }
+.shopitem.locked:hover { transform: none; background: var(--panel); border-color: var(--line); }
+.shopitem.locked::before { background: var(--txt-dim); }
+.shopitem.locked .si-meta { color: var(--txt-dim); border-bottom-color: var(--line); }
 
 /* ── SHOP: PHASE UNLOCK CONTROLS ───────────────────────── */
 .shop-tier-head { gap: 1rem; }
@@ -424,6 +428,7 @@ footer a{color:var(--hud);text-decoration:none}
 #unlock-log li:last-child { border-bottom: none; }
 #unlock-log li .log-unlocked { color: var(--ok); }
 #unlock-log .empty { color: var(--txt-dim); font-style: italic; }
+</style>
 </head>
 <body>
 <div class="sweep"></div>
@@ -466,7 +471,8 @@ footer a{color:var(--hud);text-decoration:none}
     <div class="note corp">
       <span class="lbl">Scope Notice</span>
       This catalogue covers <strong>reclaimed field salvage only.</strong> Standard
-      manufacturer gear, GMS, IPS-N, SSC, HORUS, and anything else on your License page,
+      manufacturer gear, GMS, IPS-N, SSC, HORUS, Harrison Armory, and anything else on your
+      License page,
       unlocks the normal way, through License Level and manufacturer rank in COMP/CON. It is
       not listed here and RC cannot buy it. This ledger is Halda's workshop, not the
       requisition depot.
@@ -516,17 +522,17 @@ footer a{color:var(--hud);text-decoration:none}
       <div class="shop-grid">
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Liquid Armor Inserts</span><span class="si-price">4 RC</span></div>
-          <span class="si-meta">1SP System</span>
+          <span class="si-meta">⚙ 1SP System</span>
           <span class="si-flavor">Standard delta fieldwork rig. Nothing fancy. It works.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Tactical Webbing</span><span class="si-price">4 RC</span></div>
-          <span class="si-meta">Auxiliary</span>
+          <span class="si-meta">▣ Auxiliary</span>
           <span class="si-flavor">Standard-issue field carry rig.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Nano Solder</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">Halda's own patch kit, finally on the requisition sheet.</span>
         </div>
       </div>
@@ -546,17 +552,17 @@ footer a{color:var(--hud);text-decoration:none}
       <div class="shop-grid">
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Remote Targeting Relay</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">Main Weapon</span>
+          <span class="si-meta">⌖ Main Weapon</span>
           <span class="si-flavor">Calibrated off a cleared nest's own targeting rig.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Heavy Lift Gear</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">Weir flood-gate rigging, repurposed for fieldwork.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Shockwave Pistons</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">Structural actuators salvaged from the flood works.</span>
         </div>
       </div>
@@ -576,17 +582,17 @@ footer a{color:var(--hud);text-decoration:none}
       <div class="shop-grid">
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Scavenger Nexus</span><span class="si-price">4 RC</span></div>
-          <span class="si-meta">1SP System</span>
+          <span class="si-meta">⚙ 1SP System</span>
           <span class="si-flavor">Pulled off a Sentinel's own parts-reclamation subroutine.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Distributed Tactical Net</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">Recovered Concord unit-coordination protocol.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Sponson Turrets</span><span class="si-price">4 RC</span></div>
-          <span class="si-meta">Auxiliary</span>
+          <span class="si-meta">▣ Auxiliary</span>
           <span class="si-flavor">Stripped from the Sentinel's own support emplacements.</span>
         </div>
       </div>
@@ -606,12 +612,12 @@ footer a{color:var(--hud);text-decoration:none}
       <div class="shop-grid">
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Fragment of ARASKA</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">A partial intelligence pulled from a relay core. Handle carefully.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">//shadowfist</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">Concord-era intrusion protocol. Still functional.</span>
         </div>
       </div>
@@ -631,7 +637,7 @@ footer a{color:var(--hud);text-decoration:none}
       <div class="shop-grid">
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Electric Smoke Charges</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">Bunker-clearance ordnance, four centuries old and still live.</span>
         </div>
       </div>
@@ -651,17 +657,17 @@ footer a{color:var(--hud);text-decoration:none}
       <div class="shop-grid">
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Fireflake Armor</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">Vent-basin thermal shielding, adapted for frame use.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Coolant Flush</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">Geothermal survey kit, weaponised.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Colony Nexus</span><span class="si-price">4 RC</span></div>
-          <span class="si-meta">Auxiliary</span>
+          <span class="si-meta">▣ Auxiliary</span>
           <span class="si-flavor">Herd-tracking relay, repurposed as a drone node.</span>
         </div>
       </div>
@@ -681,22 +687,22 @@ footer a{color:var(--hud);text-decoration:none}
       <div class="shop-grid">
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Starfish Charges</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">Reclaimed Concord mine casings, re-fused for field use.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Missile Minefield</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">You now know exactly how they seeded the Furrows.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">C80 Charges</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">Standing-issue Concord demolition stock.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Limpet Launcher</span><span class="si-price">4 RC</span></div>
-          <span class="si-meta">Auxiliary</span>
+          <span class="si-meta">▣ Auxiliary</span>
           <span class="si-flavor">Breaching tool adapted from mine-clearance work.</span>
         </div>
       </div>
@@ -716,22 +722,22 @@ footer a{color:var(--hud);text-decoration:none}
       <div class="shop-grid">
         <div class="shopitem">
           <div class="si-top"><span class="si-name">ECM Launchers</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">Chaff-Moth scale dispersal, reverse-engineered.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Whitestar Signal Interceptor</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">Built from Outer Wall patrol-traffic logging.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">BEARTRAP Counterintrusion Tracer</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">Counter-WARDEN protocol. It notices when you use it.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Nightingale Drone</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">A silent recon platform, if anything on Vareth is truly silent.</span>
         </div>
       </div>
@@ -751,22 +757,22 @@ footer a{color:var(--hud);text-decoration:none}
       <div class="shop-grid">
         <div class="shopitem">
           <div class="si-top"><span class="si-name">QUEEN-Class Refraction Laser</span><span class="si-price">10 RC</span></div>
-          <span class="si-meta">3SP System</span>
+          <span class="si-meta">⚙ 3SP System</span>
           <span class="si-flavor">Wall-defence optics, partially intact. Heavy stock.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Tiger Cage Anti-Air Bunker</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">Concord emplacement doctrine, made portable.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Repair Paste Capillaries</span><span class="si-price">10 RC</span></div>
-          <span class="si-meta">3SP System</span>
+          <span class="si-meta">⚙ 3SP System</span>
           <span class="si-flavor">A field-repair system that works the same way WARDEN's own does.</span>
         </div>
         <div class="shopitem">
           <div class="si-top"><span class="si-name">Active Defense System</span><span class="si-price">7 RC</span></div>
-          <span class="si-meta">2SP System</span>
+          <span class="si-meta">⚙ 2SP System</span>
           <span class="si-flavor">Point-defence hardware recovered from the trench line.</span>
         </div>
       </div>
@@ -784,17 +790,17 @@ footer a{color:var(--hud);text-decoration:none}
     <div class="shop-grid">
       <div class="shopitem">
         <div class="si-top"><span class="si-name">Breach Kit</span><span class="si-price">2 RC</span></div>
-        <span class="si-meta">Pilot Gear</span>
+        <span class="si-meta">◈ Pilot Gear</span>
         <span class="si-flavor">For doors that were never meant to open again.</span>
       </div>
       <div class="shopitem">
         <div class="si-top"><span class="si-name">Signal Flare Set</span><span class="si-price">2 RC</span></div>
-        <span class="si-meta">Pilot Gear</span>
+        <span class="si-meta">◈ Pilot Gear</span>
         <span class="si-flavor">Old-fashioned, and old-fashioned still works.</span>
       </div>
       <div class="shopitem">
         <div class="si-top"><span class="si-name">Field Trauma Pack</span><span class="si-price">2 RC</span></div>
-        <span class="si-meta">Pilot Gear</span>
+        <span class="si-meta">◈ Pilot Gear</span>
         <span class="si-flavor">Ask Halda which one she recommends. She has opinions.</span>
       </div>
     </div>
@@ -862,8 +868,8 @@ footer a{color:var(--hud);text-decoration:none}
     var html = '';
     for (var i = 0; i < ordered.length; i++) {
       var p = ordered[i];
-      html += '<li><strong>Phase ' + p.id + '</strong> · ' + p.mission +
-              ' · <span class="log-unlocked">UNLOCKED</span></li>';
+      html += '<li><strong>Phase ' + p.id + '</strong> \u00b7 ' + p.mission +
+              ' \u00b7 <span class="log-unlocked">UNLOCKED</span></li>';
     }
     log.innerHTML = html;
   }
